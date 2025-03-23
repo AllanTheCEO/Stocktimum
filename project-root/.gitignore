@@ -1,0 +1,3 @@
+.venv/
+.venv/lib64/
+.venv/bin/python
