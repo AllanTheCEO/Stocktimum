@@ -3,6 +3,7 @@ import os
 from services import data_analysis
 import yfinance as yf
 
+sys.path.append("/..")
 
 def main():
     print(data_analysis.fetch_data_type(["AAPL"], True, "10y", "1d"))

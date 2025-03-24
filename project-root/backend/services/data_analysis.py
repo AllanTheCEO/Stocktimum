@@ -15,4 +15,4 @@ def fetch_data_type(ticker, closing_price, period, interval):
 
     result = data[[price_type]].rename(columns={price_type: 'Price'})
 
-    return result
+    return result 
