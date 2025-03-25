@@ -1,60 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>Stock Price Chart</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta charset="UTF-8">
+  <title>Stock Price Chart</title>
+  <!-- Include Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
 </head>
 <body>
-    <h1>Stock Price Chart</h1>
-    <canvas id="priceChart" width="800" height="400"></canvas>
-    <script>
-        // Adjust the query parameters as necessary
-        fetch('/api/data?ticker=AAPL&period=1mo&interval=1d&closing_price=true')
-            .then(response => response.json())
-            .then(dataJson => {
-                // Parse the JSON string into an object
-                data = JSON.parse(dataJson);
-                
-                // Map dates and prices from the data
-                labels = data.map(item => item.Date);
-                prices = data.map(item => item.Price);
-                
-                ctx = document.getElementById('priceChart').getContext('2d');
-                new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'AAPL Price',
-                            data: prices,
-                            borderWidth: 1,
-                            fill: false,
-                            borderColor: 'rgba(75, 192, 192, 1)'
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            x: {
-                                type: 'time',
-                                time: {
-                                    unit: 'day'
-                                },
-                                title: {
-                                    display: true,
-                                    text: 'Date'
-                                }
-                            },
-                            y: {
-                                title: {
-                                    display: true,
-                                    text: 'Price (USD)'
-                                }
-                            }
-                        }
-                    }
-                });
-            });
-    </script>
+  <h1>Stock Price Chart</h1>
+  <!-- Canvas for rendering the chart -->
+  <canvas id="priceChart" width="800" height="400"></canvas>
+  <!-- Include your JavaScript file -->
+  <script src="src/index.js"></script>
 </body>
 </html>
