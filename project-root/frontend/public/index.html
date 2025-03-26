@@ -2,15 +2,49 @@
 <html>
 <head>
   <meta charset="UTF-8">
+  <link rel="stylesheet" href="/api/style.css">
   <title>Stock Price Chart</title>
+  <style>
+    h1 {
+      font-family: 'Arial', sans-serif;
+      font-size: 36px;
+      color: #FF5733;
+    }
+  </style>
   <!-- Include Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
 </head>
 <body>
   <h1>Stock Price Chart</h1>
+  <div>
+    <label for="tickerSelect">Stock:</label>
+    <select id="tickerSelect">
+      <option value="AAPL" selected>AAPL</option>
+      <option value="MSFT">MSFT</option>
+      <option value="GOOG">GOOG</option>
+    </select>
+
+    <label for="periodSelect">Period:</label>
+    <select id="periodSelect">
+      <option value="1mo">1mo</option>
+      <option value="6mo">6mo</option>
+      <option value="1y">1y</option>
+      <option value="5y">5y</option>
+      <option value="10y" selected>10y</option>
+    </select>
+
+    <label for="intervalSelect">Interval:</label>
+    <select id="intervalSelect">
+      <option value="1d" selected>1d</option>
+      <option value="1wk">1wk</option>
+      <option value="1mo">1mo</option>
+    </select>
+
+    <button id="updateChart">Update Chart</button>
+  </div>
   <!-- Canvas for rendering the chart -->
-  <canvas id="priceChart" width="800" height="400"></canvas>
+  <canvas id="priceChart" width="1200" height="600"></canvas>
   <!-- Include your JavaScript file -->
   <script src="src/index.js"></script>
 </body>

@@ -30,6 +30,11 @@ def api_chart():
     frontend_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'frontend/public')
     return send_from_directory(frontend_path, 'index.html')
 
+@app.route('/api/style.css')
+def serve_style_css():
+    frontend_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'frontend/public')
+    return send_from_directory(frontend_path, 'style.css')
+
 @app.route('/api/src/index.js')
 def serve_index_js():
     file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'frontend', 'src', 'index.js')
