@@ -91,7 +91,57 @@ document.addEventListener('DOMContentLoaded', () => {
     updateChart(selectedTicker, selectedPeriod, selectedInterval);
   });
 
-  // Helper function for displaying dates
+  // createTable fetches data from the API and creates a Chart.js chart.
+  // It expects the API to return an array: 
+  // [dates, openPrices, highPrices, lowPrices, closePrices, volume]
+  function createTable(ticker, period, interval) {
+    const url = `/api/data?ticker=${ticker}&period=${period}&interval=${interval}`;
   
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        // Destructure the returned data
+        const [dates, opens, highs, lows, closes, volumes] = data;
+  
+        // Grab the table body
+        const tableBody = document.getElementById("priceTableBody");
+        // Clear out any existing rows
+        tableBody.innerHTML = "";
+  
+        // Loop through the data arrays and build rows
+        for (let i = 0; i < dates.length; i++) {
+          const row = document.createElement("tr");
+  
+          // Create cells for each column
+          const dateCell = document.createElement("td");
+          dateCell.textContent = dates[i];
+          row.appendChild(dateCell);
+  
+          const openCell = document.createElement("td");
+          openCell.textContent = opens[i];
+          row.appendChild(openCell);
+  
+          const highCell = document.createElement("td");
+          highCell.textContent = highs[i];
+          row.appendChild(highCell);
+  
+          const lowCell = document.createElement("td");
+          lowCell.textContent = lows[i];
+          row.appendChild(lowCell);
+  
+          const closeCell = document.createElement("td");
+          closeCell.textContent = closes[i];
+          row.appendChild(closeCell);
+  
+          const volumeCell = document.createElement("td");
+          volumeCell.textContent = volumes[i];
+          row.appendChild(volumeCell);
+  
+          // Append the new row to the table body
+          tableBody.appendChild(row);
+        }
+      })
+      .catch(error => console.error("Error fetching data:", error));
+    }
   
 });

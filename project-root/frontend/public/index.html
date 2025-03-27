@@ -43,9 +43,28 @@
 
     <button id="updateChart">Update Chart</button>
   </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Open</th>
+        <th>High</th>
+        <th>Low</th>
+        <th>Close</th>
+        <th>Volume</th>
+      </tr>
+    </thead>
+    <tbody id="priceTableBody">
+      <!-- Rows will be dynamically inserted here -->
+    </tbody>
+  </table>
+
   <!-- Canvas for rendering the chart -->
   <canvas id="priceChart" width="1200" height="600"></canvas>
   <!-- Include your JavaScript file -->
   <script src="src/index.js"></script>
+
+
 </body>
 </html>
