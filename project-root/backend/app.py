@@ -10,10 +10,12 @@ app = Flask(__name__)
 def home():
     api_data_url = url_for("api_data")
     api_chart_url = url_for("api_chart")
+    api_test_chart = url_for("api_table")
     return f'''
     <h1>Homepage</h1>
     <p>Click <a href="{api_data_url}">here</a> to go to the API Data.</p>
     <p>Click <a href="{api_chart_url}">here</a> to go to the API Chart.</p>
+    <p>Click <a href="{api_test_chart}">here</a> to go to the API Table.</p>
     '''
 
 @app.route('/api/data')
@@ -39,6 +41,18 @@ def serve_style_css():
 def serve_index_js():
     file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'frontend', 'src', 'index.js')
     return send_from_directory(os.path.dirname(file_path), os.path.basename(file_path))
+
+@app.route('/api/table')
+def api_table():
+    frontend_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'frontend/public')
+    return send_from_directory(frontend_path, 'test.html')
+
+@app.route('/api/src/test.js')
+def serve_test_js():
+    file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'frontend', 'src', 'test.js')
+    return send_from_directory(os.path.dirname(file_path), os.path.basename(file_path))    
+        
+    
 
 
 
