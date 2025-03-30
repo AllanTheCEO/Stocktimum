@@ -1,3 +1,8 @@
+import { stocksList } from './stocks.js';
+import $ from 'jquery';
+
+
+
 document.addEventListener('DOMContentLoaded', () => {
   let chartInstance = null;
 
@@ -86,6 +91,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Get the UI elements for user input
   const tickerSelect = document.getElementById('tickerSelect');
+  /*
+  // Populate the dropdown with stocks from stocksList
+  stocksList.forEach(stock => {
+    const option = document.createElement('option');
+    option.value = stock;
+    option.textContent = stock;
+    tickerSelect.appendChild(option);
+  });
+
+  // Initialize Select2 for searchable, scrollable dropdown
+  $(tickerSelect).select2({
+    placeholder: "Select a stock",
+    dropdownCssClass: "select2-dropdown-height"
+  }); */
   const periodSelect = document.getElementById('periodSelect');
   const intervalSelect = document.getElementById('intervalSelect');
   const updateChartBtn = document.getElementById('updateChart');

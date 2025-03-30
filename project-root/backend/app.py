@@ -50,11 +50,13 @@ def api_table():
 @app.route('/api/src/test.js')
 def serve_test_js():
     file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'frontend', 'src', 'test.js')
-    return send_from_directory(os.path.dirname(file_path), os.path.basename(file_path))    
+    return send_from_directory(os.path.dirname(file_path), os.path.basename(file_path))  
+
+@app.route('/api/src/stocks.js')
+def serve_stocks_js():
+    file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'frontend', 'src', 'stocks.js')
+    return send_from_directory(os.path.dirname(file_path), os.path.basename(file_path))  
         
     
-
-
-
 if __name__ == '__main__':
     app.run(debug=True)
