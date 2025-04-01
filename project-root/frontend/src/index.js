@@ -1,5 +1,4 @@
 import { stocksList } from './stocks.js';
-import $ from 'jquery';
 
 
 
@@ -89,22 +88,27 @@ document.addEventListener('DOMContentLoaded', () => {
       .catch(error => console.error('Error fetching data:', error));
   }
 
-  // Get the UI elements for user input
   const tickerSelect = document.getElementById('tickerSelect');
-  /*
-  // Populate the dropdown with stocks from stocksList
+  tickerSelect.innerHTML = '';
+  const emptyOption = document.createElement('option');
+  emptyOption.value = '';
+  emptyOption.textContent = '';
+  tickerSelect.appendChild(emptyOption);
+  
   stocksList.forEach(stock => {
     const option = document.createElement('option');
     option.value = stock;
     option.textContent = stock;
     tickerSelect.appendChild(option);
   });
-
-  // Initialize Select2 for searchable, scrollable dropdown
+  
+  // jQuery and Select2 are loaded via CDN in HTML
   $(tickerSelect).select2({
-    placeholder: "Select a stock",
-    dropdownCssClass: "select2-dropdown-height"
-  }); */
+    placeholder: 'Select a stock',
+    allowClear: true,
+    width: 'resolve'
+  });
+
   const periodSelect = document.getElementById('periodSelect');
   const intervalSelect = document.getElementById('intervalSelect');
   const updateChartBtn = document.getElementById('updateChart');
