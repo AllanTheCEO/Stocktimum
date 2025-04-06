@@ -1,7 +1,6 @@
 import { stocksList } from './stocks.js';
 
 
-
 document.addEventListener('DOMContentLoaded', () => {
   let chartInstance = null;
 
@@ -69,11 +68,15 @@ document.addEventListener('DOMContentLoaded', () => {
       .then(data => {
         // Assume data is in the form: [ [ '2025-03-18', ... ], [212.69, ...] ]
         const dates = data[0];
-        const prices = data[1];
+        const opens = data[1];
+        const highs = data[2];
+        const lows = data[3];
+        const closes = data[4];
+        const volumes = data[5];
 
         // Update the config with new data and label
         config.data.labels = dates;
-        config.data.datasets[0].data = prices;
+        config.data.datasets[0].data = closes;
         config.data.datasets[0].label = `${ticker} Price`;
 
         // Get the canvas context
@@ -84,8 +87,59 @@ document.addEventListener('DOMContentLoaded', () => {
           chartInstance.destroy();
         }
         chartInstance = new Chart(ctx, config);
+        // --- Update Table ---
+      // Clear the existing table container.
+      const tableContainer = document.getElementById('priceTable');
+      tableContainer.innerHTML = '';
+
+      // Create a new table element.
+      const table = document.createElement('table');
+      table.style.borderCollapse = 'collapse';
+      table.style.width = '80%';
+      table.style.margin = '20px auto';
+
+      // Create table header.
+      const thead = document.createElement('thead');
+      const headerRow = document.createElement('tr');
+      const headers = ['Date', 'Open', 'High', 'Low', 'Close', 'Volume'];
+      headers.forEach(headerText => {
+        const th = document.createElement('th');
+        th.textContent = headerText;
+        th.style.border = '1px solid #ddd';
+        th.style.padding = '8px';
+        th.style.backgroundColor = '#f2f2f2';
+        headerRow.appendChild(th);
+      });
+      thead.appendChild(headerRow);
+      table.appendChild(thead);
+
+      // Create table body.
+      const tbody = document.createElement('tbody');
+      tbody.id = 'priceTableBody';
+
+      // Populate the table rows using the fetched array values.
+      for (let i = 0; i < dates.length; i++) {
+        const row = document.createElement('tr');
+
+        // Create cells for each column using the fetched data.
+        const cellValues = [dates[i], opens[i], highs[i], lows[i], closes[i], volumes[i]];
+        cellValues.forEach(value => {
+          const td = document.createElement('td');
+          td.textContent = value;
+          td.style.border = '1px solid #ddd';
+          td.style.padding = '8px';
+          td.style.color = 'white';
+          row.appendChild(td);
+        });
+        tbody.appendChild(row);
+      }
+
+      table.appendChild(tbody);
+      tableContainer.appendChild(table);
       })
+
       .catch(error => console.error('Error fetching data:', error));
+
   }
 
   const tickerSelect = document.getElementById('tickerSelect');
@@ -124,9 +178,8 @@ document.addEventListener('DOMContentLoaded', () => {
     updateChart(selectedTicker, selectedPeriod, selectedInterval);
   });
 
-  // createTable fetches data from the API and creates a Chart.js chart.
-  // It expects the API to return an array: 
-  // [dates, openPrices, highPrices, lowPrices, closePrices, volume]
+  
+  
   
   
 });
