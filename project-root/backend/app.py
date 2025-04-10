@@ -25,7 +25,7 @@ def api_data():
     period = request.args.get('period', "10y")
     interval = request.args.get('interval', "1d")
 
-    return jsonify(data_analysis.fetch_data_type(ticker, closing_price, period, interval))
+    return jsonify(data_analysis.fetch_data(ticker, period, interval))
 
 @app.route('/api/chart') 
 def api_chart():
@@ -47,10 +47,6 @@ def api_table():
     frontend_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'frontend/public')
     return send_from_directory(frontend_path, 'test.html')
 
-@app.route('/api/src/test.js')
-def serve_test_js():
-    file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'frontend', 'src', 'test.js')
-    return send_from_directory(os.path.dirname(file_path), os.path.basename(file_path))  
 
 @app.route('/api/src/stocks.js')
 def serve_stocks_js():
