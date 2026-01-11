@@ -1,58 +1,94 @@
-from flask import Flask, jsonify, url_for, redirect, request, render_template, send_from_directory
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+import logging
+import time
+
+from config import settings
 from services import data_analysis
-import os
+
+logger = logging.getLogger("stocktimum")
+logging.basicConfig(level=logging.INFO)
+
+app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.allowed_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
-
-app = Flask(__name__)
-
-@app.route('/')
-def home():
-    api_data_url = url_for("api_data")
-    api_chart_url = url_for("api_chart")
-    api_test_chart = url_for("api_table")
-    return f'''
-    <h1>Homepage</h1>
-    <p>Click <a href="{api_data_url}">here</a> to go to the API Data.</p>
-    <p>Click <a href="{api_chart_url}">here</a> to go to the API Chart.</p>
-    <p>Click <a href="{api_test_chart}">here</a> to go to the API Table.</p>
-    '''
-
-@app.route('/api/data')
-def api_data():
-    ticker = request.args.get('ticker', "AAPL")
-    closing_price = request.args.get('closing_price', True)
-    period = request.args.get('period', "10y")
-    interval = request.args.get('interval', "1d")
-
-    return jsonify(data_analysis.fetch_data(ticker, period, interval))
-
-@app.route('/api/chart') 
-def api_chart():
-    frontend_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'frontend/public')
-    return send_from_directory(frontend_path, 'index.html')
-
-@app.route('/api/style.css')
-def serve_style_css():
-    frontend_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'frontend/public')
-    return send_from_directory(frontend_path, 'style.css')
-
-@app.route('/api/src/index.js')
-def serve_index_js():
-    file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'frontend', 'src', 'index.js')
-    return send_from_directory(os.path.dirname(file_path), os.path.basename(file_path))
-
-@app.route('/api/table')
-def api_table():
-    frontend_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'frontend/public')
-    return send_from_directory(frontend_path, 'test.html')
+def error_payload(message, details=None):
+    return {"error": {"message": message, "details": details}}
 
 
-@app.route('/api/src/stocks.js')
-def serve_stocks_js():
-    file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'frontend', 'src', 'stocks.js')
-    return send_from_directory(os.path.dirname(file_path), os.path.basename(file_path))  
-        
-    
-if __name__ == '__main__':
-    app.run(debug=True)
+@app.exception_handler(HTTPException)
+async def http_exception_handler(request: Request, exc: HTTPException):
+    return JSONResponse(
+        status_code=exc.status_code,
+        content=error_payload(str(exc.detail)),
+    )
+
+
+@app.exception_handler(Exception)
+async def unhandled_exception_handler(request: Request, exc: Exception):
+    logger.exception("Unhandled exception")
+    return JSONResponse(
+        status_code=500,
+        content=error_payload("Internal Server Error"),
+    )
+
+
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    start_time = time.perf_counter()
+    response = None
+    try:
+        response = await call_next(request)
+        return response
+    finally:
+        duration_ms = (time.perf_counter() - start_time) * 1000
+        status_code = response.status_code if response else 500
+        logger.info(
+            "%s %s - %s in %.2fms",
+            request.method,
+            request.url.path,
+            status_code,
+            duration_ms,
+        )
+
+
+@app.get("/")
+async def home():
+    return {
+        "message": "Stocktimum API",
+        "docs": "/docs",
+    }
+
+
+@app.get("/api/data")
+async def api_data(
+    ticker: str = "AAPL",
+    closing_price: bool = True,
+    period: str = "10y",
+    interval: str = "1d",
+):
+    return data_analysis.fetch_data(ticker, period, interval)
+
+
+@app.get("/api/hello")
+async def api_hello():
+    return {
+        "message": "Hello from Stocktimum",
+        "cache_ttl_seconds": settings.cache_ttl_seconds,
+        "data_dir": settings.data_dir,
+    }
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(app, host="0.0.0.0", port=8000)
