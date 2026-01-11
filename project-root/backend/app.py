@@ -5,9 +5,9 @@ import logging
 import time
 
 from config import settings
-from services import data_analysis
+import data_analysis
 
-logger = logging.getLogger("stocktimum")
+logger = logging.getLogger("Stocktimum")
 logging.basicConfig(level=logging.INFO)
 
 app = FastAPI()
