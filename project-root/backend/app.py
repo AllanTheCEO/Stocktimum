@@ -75,8 +75,9 @@ async def api_data(
     closing_price: bool = True,
     period: str = "10y",
     interval: str = "1d",
+    force: bool = False,
 ):
-    return data_analysis.fetch_data(ticker, period, interval)
+    return data_analysis.fetch_data(ticker, period, interval, force=force)
 
 
 @app.get("/api/hello")
