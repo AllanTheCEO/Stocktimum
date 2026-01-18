@@ -32,10 +32,10 @@ def select_single_ticker_frame(data, tickers):
     return data
 
 
-def parse_period_start(period: str) -> datetime | None:
-    if not period:
+def parse_period_start(interval: str) -> datetime | None:
+    if not interval:
         return None
-    normalized = period.strip().lower()
+    normalized = interval.strip().lower()
     if normalized == "max":
         return None
     value = ""
@@ -194,7 +194,7 @@ def fetch_full_data(ticker: str, period: str, interval: str, force: bool = False
         cached_payload = cache.load_cached_payload(symbol, interval)
 
     cached_data = cached_payload.get("data") if cached_payload else None
-    desired_start = parse_period_start(period)
+    desired_start = parse_period_start(interval)
     desired_end = datetime.now()
 
     cache_start, cache_end = cache_date_range(cached_data, interval) if cached_data else (None, None)
