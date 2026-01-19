@@ -6,6 +6,8 @@ import yfinance as yf
 import cache
 
 
+cache_data_dir = str(cache.cache_db_path())
+
 def normalize_tickers(ticker):
     if isinstance(ticker, (list, tuple)):
         normalized = [str(item).strip().upper() for item in ticker if str(item).strip()]
@@ -115,6 +117,16 @@ def interval_step(interval: str) -> timedelta:
 def cache_date_range(data: dict, interval: str) -> tuple[datetime | None, datetime | None]:
     if not data or not data.get("dates"):
         return None, None
+    def parse_timestamp(value: str) -> datetime:
+        for fmt in ("%Y-%m-%d %H:%M", "%Y-%m-%d"):
+            try:
+                return datetime.strptime(value, fmt)
+            except ValueError:
+                continue
+        raise ValueError(f"Unsupported timestamp format: {value}")
+
+    start_date = parse_timestamp(data["dates"][0])
+    end_date = parse_timestamp(data["dates"][-1])
     date_format = timestamp_format(interval)
     start_date = datetime.strptime(data["dates"][0], date_format)
     end_date = datetime.strptime(data["dates"][-1], date_format)

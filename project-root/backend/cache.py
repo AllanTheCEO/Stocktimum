@@ -8,6 +8,7 @@ def cache_db_path() -> Path:
 
 def get_connection() -> sqlite3.Connection:
     db_path = cache_db_path()
+    db_path.touch(exist_ok=True)
     db_path.touch(dp_path, exist_ok=True)
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
@@ -90,3 +91,9 @@ def save_cached_payload(symbol: str, interval: str, data: dict) -> None:
             [(symbol, interval, ts, open, high, low, close, volume) for ts, open, high, low, close, volume in deduped],
         )
         conn.commit()
+
+
+# Future cache plan: keep indicator and model feature caches under
+# data_cache/{symbol}/{interval}.<ext> (for raw data) alongside
+# data_cache/{symbol}/{interval}_indicators.json and
+# data_cache/{symbol}/{interval}_features.json to reuse TTL/force logic.
