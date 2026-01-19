@@ -1,24 +1,15 @@
 import sqlite3
-import time
 from pathlib import Path
 
-from config import settings
 
 
 def cache_db_path() -> Path:
-    return Path(settings.data_dir) / "cache.sqlite"
-
-
-def is_cache_fresh(updated_at: float) -> bool:
-    if settings.cache_ttl_seconds <= 0:
-        return False
-    age_seconds = time.time() - updated_at
-    return age_seconds < settings.cache_ttl_seconds
+    return "cache.sqlite"
 
 
 def get_connection() -> sqlite3.Connection:
     db_path = cache_db_path()
-    db_path.parent.mkdir(parents=True, exist_ok=True)
+    Path.touch(db_path, exist_ok=True)
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     return conn
@@ -40,28 +31,12 @@ def init_db(conn: sqlite3.Connection) -> None:
         )
         """
     )
-    conn.execute(
-        """
-        CREATE TABLE IF NOT EXISTS cache_meta (
-            symbol TEXT NOT NULL,
-            interval TEXT NOT NULL,
-            updated_at REAL NOT NULL,
-            PRIMARY KEY (symbol, interval)
-        )
-        """
-    )
     conn.commit()
 
 
 def load_cached_payload(symbol: str, interval: str):
     with get_connection() as conn:
         init_db(conn)
-        meta = conn.execute(
-            "SELECT updated_at FROM cache_meta WHERE symbol = ? AND interval = ?",
-            (symbol, interval),
-        ).fetchone()
-        if not meta or not is_cache_fresh(meta["updated_at"]):
-            return None
         rows = conn.execute(
             """
             SELECT ts, open, high, low, close, volume
@@ -101,26 +76,18 @@ def save_cached_payload(symbol: str, interval: str, data: dict) -> None:
                 data.get("volume", []),
             )
         )
+        unique_rows = {}
+        for ts, open_value, high_value, low_value, close_value, volume_value in rows:
+            unique_rows[ts] = (open_value, high_value, low_value, close_value, volume_value)
+        deduped = [
+            (ts, *unique_rows[ts])
+            for ts in sorted(unique_rows.keys())
+        ]
         conn.executemany(
             """
             INSERT INTO market_data (symbol, interval, ts, open, high, low, close, volume)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """,
-            [(symbol, interval, ts, open, high, low, close, volume) for ts, open, high, low, close, volume in rows],
-        )
-        conn.execute(
-            """
-            INSERT INTO cache_meta (symbol, interval, updated_at)
-            VALUES (?, ?, ?)
-            ON CONFLICT(symbol, interval)
-            DO UPDATE SET updated_at=excluded.updated_at
-            """,
-            (symbol, interval, time.time()),
+            [(symbol, interval, ts, open, high, low, close, volume) for ts, open, high, low, close, volume in deduped],
         )
         conn.commit()
-
-
-# Future cache plan: keep indicator and model feature caches under
-# data_cache/{symbol}/{interval}.<ext> (for raw data) alongside
-# data_cache/{symbol}/{interval}_indicators.json and
-# data_cache/{symbol}/{interval}_features.json to reuse TTL/force logic.
