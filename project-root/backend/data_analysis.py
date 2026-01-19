@@ -127,6 +127,9 @@ def cache_date_range(data: dict, interval: str) -> tuple[datetime | None, dateti
 
     start_date = parse_timestamp(data["dates"][0])
     end_date = parse_timestamp(data["dates"][-1])
+    date_format = timestamp_format(interval)
+    start_date = datetime.strptime(data["dates"][0], date_format)
+    end_date = datetime.strptime(data["dates"][-1], date_format)
     return start_date, end_date
 
 

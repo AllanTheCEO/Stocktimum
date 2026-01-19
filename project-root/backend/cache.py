@@ -9,6 +9,7 @@ def cache_db_path() -> Path:
 def get_connection() -> sqlite3.Connection:
     db_path = cache_db_path()
     db_path.touch(exist_ok=True)
+    db_path.touch(dp_path, exist_ok=True)
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     return conn
