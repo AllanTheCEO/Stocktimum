@@ -4,7 +4,6 @@ from fastapi.responses import JSONResponse
 import logging
 import time
 
-from config import settings
 import data_analysis
 
 logger = logging.getLogger("Stocktimum")
@@ -14,7 +13,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.allowed_origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -84,8 +83,7 @@ async def api_data(
 async def api_hello():
     return {
         "message": "Hello from Stocktimum",
-        "cache_ttl_seconds": settings.cache_ttl_seconds,
-        "data_dir": settings.data_dir,
+        "data_dir": data_analysis.cache_data_dir,
     }
 
 
