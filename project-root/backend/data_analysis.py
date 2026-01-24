@@ -113,23 +113,20 @@ def interval_step(interval: str) -> timedelta:
         return timedelta(days=365 * amount)
     return timedelta(days=amount)
 
+def parse_timestamp(value: str) -> datetime:
+    for fmt in ("%Y-%m-%d %H:%M", "%Y-%m-%d"):
+        try:
+            return datetime.strptime(value, fmt)
+        except ValueError:
+            continue
+    raise ValueError(f"Unsupported timestamp format: {value}")
 
 def cache_date_range(data: dict, interval: str) -> tuple[datetime | None, datetime | None]:
     if not data or not data.get("dates"):
         return None, None
-    def parse_timestamp(value: str) -> datetime:
-        for fmt in ("%Y-%m-%d %H:%M", "%Y-%m-%d"):
-            try:
-                return datetime.strptime(value, fmt)
-            except ValueError:
-                continue
-        raise ValueError(f"Unsupported timestamp format: {value}")
 
     start_date = parse_timestamp(data["dates"][0])
     end_date = parse_timestamp(data["dates"][-1])
-    date_format = timestamp_format(interval)
-    start_date = datetime.strptime(data["dates"][0], date_format)
-    end_date = datetime.strptime(data["dates"][-1], date_format)
     return start_date, end_date
 
 
@@ -139,7 +136,6 @@ def fetch_full_data(ticker: str, period: str, interval: str, force: bool = False
     cached_data = cached_payload.get("data") if cached_payload else None
     desired_start = parse_period_start(period)
     desired_end = datetime.now()
-    date_format = timestamp_format(interval)
 
     cache_start, cache_end = cache_date_range(cached_data, interval) if cached_data else (None, None)
     if cached_data and desired_start and cache_start and cache_end:
@@ -149,8 +145,8 @@ def fetch_full_data(ticker: str, period: str, interval: str, force: bool = False
     def fetch_range(start: datetime, end: datetime) -> dict:
         frame = yf.download(
             tickers=symbol,
-            start=start.strftime(date_format),
-            end=end.strftime(date_format),
+            start=start,
+            end=end,
             interval=interval,
             group_by="column",
         )

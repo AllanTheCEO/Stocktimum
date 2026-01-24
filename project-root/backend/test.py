@@ -6,7 +6,7 @@ import yfinance as yf
 sys.path.append("/..")
 
 def main():
-    print(data_analysis.fetch_data("AAPL", "1mo", "1h"))
+    print(data_analysis.fetch_data("GOOG", "1mo", "1d"))
 
 if __name__ == "__main__":
     main()

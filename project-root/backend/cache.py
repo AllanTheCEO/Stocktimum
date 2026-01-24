@@ -8,8 +8,7 @@ def cache_db_path() -> Path:
 
 def get_connection() -> sqlite3.Connection:
     db_path = cache_db_path()
-    db_path.touch(exist_ok=True)
-    db_path.touch(dp_path, exist_ok=True)
+    Path.touch(db_path, exist_ok=True)
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     return conn
@@ -48,6 +47,7 @@ def load_cached_payload(symbol: str, interval: str):
         ).fetchall()
     if not rows:
         return None
+    print("Loading from cache")
     data = {
         "dates": [row["ts"] for row in rows],
         "open": [row["open"] for row in rows],
