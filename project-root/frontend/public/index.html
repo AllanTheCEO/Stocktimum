@@ -19,50 +19,7 @@
   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 </head>
 <body>
-  <div class="container">
-    <div class="sidebar">
-      <h2>Adjust Stock Parameters</h2>
-      <div>
-        <label for="tickerSelect">Stock:</label>
-        <select id="tickerSelect">
-          <option value="AAPL" selected>AAPL</option>
-          <option value="MSFT">MSFT</option>
-          <option value="GOOG">GOOG</option>
-        </select>
-    
-        <label for="periodSelect">Period:</label>
-        <select id="periodSelect">
-          <option value="1mo">1mo</option>
-          <option value="6mo">6mo</option>
-          <option value="1y">1y</option>
-          <option value="5y">5y</option>
-          <option value="10y" selected>10y</option>
-        </select>
-    
-        <label for="intervalSelect">Interval:</label>
-        <select id="intervalSelect">
-          <option value="1d" selected>1d</option>
-          <option value="1wk">1wk</option>
-          <option value="1mo">1mo</option>
-        </select>
-    
-        <button id="updateChart">Update Chart</button>
-      </div>
-    </div>
-
-    <div class="content">
-      <div class="chart-container">
-        <h2>Raw data</h2>
-        <div id="priceTable"></div>
-      </div>
-      <div class="table-container">
-        <h2>Stock Price Chart</h2>        
-        <canvas id="priceChart"></canvas>
-      </div>
-    </div>
-  </div>
-  
-  <!--<script src = "src/test.js"></script> -->
-  <script type="module" src = "src/index.js"></script>
+  <div id="root"></div>
+  <script type="module" src="src/index.js"></script>
 </body>
 </html>
