@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Chart from 'chart.js/auto';
 import 'chartjs-adapter-date-fns';
-import { stocksList } from './stocksList.js';
+import { stocksList } from './stocksList';
 
 const tableStyles = {
   table: {
@@ -24,7 +24,7 @@ const tableStyles = {
 const getDisplayUnit = (period) => (period === '5y' || period === '10y' ? 'month' : 'day');
 
 function App() {
-     const [ticker, setTicker] = useState('AAPL');
+  const [ticker, setTicker] = useState('AAPL');
   const [period, setPeriod] = useState('10y');
   const [interval, setInterval] = useState('1d');
   const [rows, setRows] = useState([]);
@@ -35,7 +35,7 @@ function App() {
 
   useEffect(() => {
     fetch('/api/hello')
-          .then((res) => res.json())
+      .then((res) => res.json())
       .then((data) => setMessage(data.message))
       .catch((err) => setMessage(`Error: ${err}`));
   }, []);
@@ -71,47 +71,48 @@ function App() {
       if (chartInstanceRef.current) {
         chartInstanceRef.current.destroy();
       }
+
       chartInstanceRef.current = new Chart(chartRef.current.getContext('2d'), {
-    type: 'line',
-    data: {
-        labels: dates,
-        datasets: [
-        {
-            label: `${nextTicker} Price`,
-            data: closes,
-            borderColor: 'rgb(192, 75, 75)',
-            backgroundColor: 'rgba(13, 89, 220, 0.2)',
-            fill: false,
-            tension: 0.1
-        }
-        ]
-    },
-    options: {
-        plugins: {
-        tooltip: {
-            enabled: false
-        }
+        type: 'line',
+        data: {
+          labels: dates,
+          datasets: [
+            {
+              label: `${nextTicker} Price`,
+              data: closes,
+              borderColor: 'rgb(192, 75, 75)',
+              backgroundColor: 'rgba(13, 89, 220, 0.2)',
+              fill: false,
+              tension: 0.1
+            }
+          ]
         },
-        scales: {
-        x: {
-            type: 'time',
-            time: {
-            unit: getDisplayUnit(nextPeriod)
+        options: {
+          plugins: {
+            tooltip: {
+              enabled: false
+            }
+          },
+          scales: {
+            x: {
+              type: 'time',
+              time: {
+                unit: getDisplayUnit(nextPeriod)
+              },
+              title: {
+                display: true,
+                text: 'Date'
+              }
             },
-            title: {
-            display: true,
-            text: 'Date'
+            y: {
+              title: {
+                display: true,
+                text: 'Price (USD)'
+              }
             }
-        },
-        y: {
-            title: {
-            display: true,
-            text: 'Price (USD)'
-            }
+          }
         }
-        }
-    }
-    });
+      });
     } catch (fetchError) {
       console.error('Error fetching data:', fetchError);
       setError('Unable to load stock data.');
